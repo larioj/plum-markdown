@@ -36,7 +36,7 @@ function! plum#markdown#IsBlock(context)
   if end < start
     return 0
   endif
-  let match = join(getline(start, end))
+  let match = join(getline(start, end), "\n")
   let context.syntax = syntax
   let context.match = match
   return 1
@@ -45,14 +45,14 @@ endfunction
 function! plum#markdown#ApplyBlock(context)
   let context = a:context
   let actions = get(g:, 'plum_markdown_actions', {})
-  let action = actions[context.syntax]
-  return action(context)
+  let Action = actions[context.syntax]
+  return Action(context)
 endfunction
 
 function! plum#markdown#ApplyBlockAsHeredoc(context)
   let context = a:context
   let start = context.syntax . " <<'EOF'\n"
-  let end = "EOF\n"
+  let end = "\nEOF"
   let context.match = start . context.match . end
   call plum#term#SmartTerminal().apply(context)
 endfunction
